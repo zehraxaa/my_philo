@@ -6,7 +6,7 @@
 /*   By: aaydogdu <aaydogdu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 16:22:04 by aaydogdu          #+#    #+#             */
-/*   Updated: 2025/08/05 17:25:00 by aaydogdu         ###   ########.fr       */
+/*   Updated: 2025/08/06 18:23:01 by aaydogdu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ int	cont_death(t_philos *philo) //check_death'in which == 1 kısmı
 		> philo->info->die_time)
 		return (pthread_mutex_unlock(&philo->last_meal_m),
 			pthread_mutex_unlock(&philo->had_full_m), 1);
-	pthread_mutex_unlock(&philo->last_meal_m);
 	pthread_mutex_unlock(&philo->had_full_m);
+	pthread_mutex_unlock(&philo->last_meal_m);
 	return (0);
 }
 
@@ -34,6 +34,28 @@ int	can_continue(t_philos *philo) //check_death'in which == 0 kısmı
 		return (1); // olumlu durum olarak 1 ile çıkış yapsın
 	}
 	return (0); //olumsuz durumda 0 la çıksın
+}
+
+void	print_call(t_philos philo, char *str) //kill = 0 olduğu durumlarda
+{ //philo parametresini neden * sız koyduğumuzu öğren
+	pthread_mutex_lock(&philo.info->is_anyphilo_died_m);
+	if (philo.had_full == false && philo.info->is_anyphilo_died == false)
+	{
+		pthread_mutex_lock(&philo.info->print_mutex);
+		printf("%ld %d %s\n", get_time() - philo.info->start_time, philo.id + 1, str);
+		pthread_mutex_unlock(&philo.info->print_mutex);
+	}
+	pthread_mutex_unlock(&philo.info->is_anyphilo_died_m);
+}
+
+void	print_death(t_philos philo, char *str) //kill = 1 oldğu durumlarda
+{
+	pthread_mutex_lock(&philo.info->is_anyphilo_died_m);
+	philo.info->is_anyphilo_died = true;
+	pthread_mutex_unlock(&philo.info->is_anyphilo_died_m);
+	pthread_mutex_lock(&philo.info->print_mutex);
+	printf("%ld %d %s\n", get_time() - philo.info->start_time, philo.id + 1, str);
+	pthread_mutex_unlock(&philo.info->print_mutex);
 }
 
 void	*monitor(void *arg)

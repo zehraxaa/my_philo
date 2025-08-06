@@ -6,7 +6,7 @@
 /*   By: aaydogdu <aaydogdu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 16:21:54 by aaydogdu          #+#    #+#             */
-/*   Updated: 2025/08/05 16:21:55 by aaydogdu         ###   ########.fr       */
+/*   Updated: 2025/08/06 18:16:48 by aaydogdu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,14 +62,6 @@ static int initialize_arg(t_info *info, char **argv)
 	return (0); //hatasızsa 0 dönecek
 }
 
-static void one_philo(t_info *info)
-{
-	printf("%d %d %s\n", 0, 1, "has taken a fork");
-	sleepy_philo(info->die_time);
-	printf("%ld %d %s\n", info->die_time + 1, 1, "died");
-	free(info->forks);
-}
-
 static int	initialize_philo(t_philos *philo, t_info *info)
 {
 	int	index;
@@ -102,13 +94,13 @@ int main(int ac, char **av)
 		return (1);
 	if (info.num_of_philos == 1)
 	{
-		one_philo(&info);
+		one_philo(&info, philos);
 		free(philos);
 		return (1);
 	}
-	/* if (initialize_philo(philos, &info)
+	if (initialize_philo(philos, &info)
 		|| pthread_create(&monitor_thread, NULL, &monitor, philos))
 		return (free(info.forks), free(philos), 1);
-	create_philos(philos, &info);
-	return (cleanup(&monitor_thread, philos), 0); */
+	create_philo(philos, &info);
+	return (cleanup(&monitor_thread, philos), 0);
 }

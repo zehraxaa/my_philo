@@ -45,10 +45,18 @@ int		ft_atoi(const char *str);
 time_t	get_time();
 int		mutex_creator_fork(t_info *info);
 void	sleepy_philo(time_t time);
+void	cleanup(pthread_t *monitor_thread, t_philos *philos);
 //monitor
 void	*monitor(void *arg);
-//monitor_utils
 void	print_call(t_philos philo, char *str);
 void	print_death(t_philos philo, char *str);
+int		cont_death(t_philos *philo);
+int		can_continue(t_philos *philo);
+//philos
+void	one_philo(t_info *info, t_philos *philo);
+void	philo_routine(t_philos *philo);
+void	*philos_life(void *arg);
+void	create_philo(t_philos *philo, t_info *info);
+
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: aaydogdu <aaydogdu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 16:22:09 by aaydogdu          #+#    #+#             */
-/*   Updated: 2025/08/05 16:22:10 by aaydogdu         ###   ########.fr       */
+/*   Updated: 2025/08/06 18:15:20 by aaydogdu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	ft_atoi(const char *str)
 
 	i = 0;
 	num = 0;
-	while(str[i])
+	while (str[i])
 	{
 		num = num * 10 + (str[i] - '0');
 		i++;
@@ -27,7 +27,7 @@ int	ft_atoi(const char *str)
 	return (num);
 }
 
-time_t	get_time()
+time_t	get_time(void)
 {
 	struct timeval	time;
 
@@ -52,6 +52,24 @@ int	mutex_creator_fork(t_info *info)
 		return (1);
 	return (0);
 }
+
+void	cleanup(pthread_t *monitor_thread, t_philos *philos)
+{
+	int	i;
+
+	pthread_join(*monitor_thread, NULL);
+	i = 0;
+	while (i < philos->info->num_of_philos)
+	{
+		pthread_mutex_destroy(&philos[i].last_meal_m);
+		pthread_mutex_destroy(&philos[i].info->forks[i]);
+		i++;
+	}
+	pthread_mutex_destroy(&philos[0].info->print_mutex);
+	free(philos->info->forks);
+	free(philos);
+}
+
 void	sleepy_philo(time_t time)
 {
 	time_t	wake_up;
