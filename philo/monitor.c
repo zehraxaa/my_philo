@@ -33,6 +33,7 @@ int	can_continue(t_philos *philo) //check_death'in which == 0 kısmı
 		pthread_mutex_unlock(&philo->info->is_anyphilo_died_m);
 		return (1); // olumlu durum olarak 1 ile çıkış yapsın
 	}
+	pthread_mutex_unlock(&philo->info->is_anyphilo_died_m);
 	return (0); //olumsuz durumda 0 la çıksın
 }
 
