@@ -1,7 +1,8 @@
 NAME = philo
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror #-fsanitize=thread
+##LDFLAGS = -fsanitize=thread
 
 SRC = main.c utils.c monitor.c philos.c
 
@@ -10,7 +11,7 @@ OBJ = $(SRC:.c=.o)
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) 
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@

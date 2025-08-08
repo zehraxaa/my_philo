@@ -31,7 +31,7 @@ typedef struct	s_info
 typedef struct		s_philos
 {
 	int				id;
-	int				had_full;
+	bool			had_full;
 	int				meals_eaten;
 	time_t			last_meal_t;
 	pthread_mutex_t	had_full_m;
@@ -44,7 +44,7 @@ typedef struct		s_philos
 int		ft_atoi(const char *str);
 time_t	get_time();
 int		mutex_creator_fork(t_info *info);
-void	sleepy_philo(time_t time);
+void	sleepy_philo(time_t time, t_philos *philo);
 void	cleanup(pthread_t *monitor_thread, t_philos *philos);
 //monitor
 void	*monitor(void *arg);

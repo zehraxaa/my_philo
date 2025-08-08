@@ -6,7 +6,7 @@
 /*   By: aaydogdu <aaydogdu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 16:22:04 by aaydogdu          #+#    #+#             */
-/*   Updated: 2025/08/06 18:23:01 by aaydogdu         ###   ########.fr       */
+/*   Updated: 2025/08/08 16:15:35 by aaydogdu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@ int	cont_death(t_philos *philo) //check_death'in which == 1 kısmı
 	pthread_mutex_lock(&philo->last_meal_m);
 	pthread_mutex_lock(&philo->had_full_m);
 	if (philo->had_full == false && get_time() - philo->last_meal_t
-		> philo->info->die_time)
+		>= philo->info->die_time)
 		return (pthread_mutex_unlock(&philo->last_meal_m),
-			pthread_mutex_unlock(&philo->had_full_m), 1);
+			pthread_mutex_unlock(&philo->had_full_m), 1); //1 dönüyorsa öldü demek
 	pthread_mutex_unlock(&philo->had_full_m);
 	pthread_mutex_unlock(&philo->last_meal_m);
 	return (0);
@@ -82,7 +82,7 @@ void	*monitor(void *arg)
 				count++;
 			pthread_mutex_unlock(&philo[index].had_full_m);
 		}
-		if (count == philo->info->eat_count)
+		if (philo->info->eat_count != -1 && count == philo->info->num_of_philos)
 			break;
 	}
 	return (NULL);

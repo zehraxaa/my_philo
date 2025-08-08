@@ -6,7 +6,7 @@
 /*   By: aaydogdu <aaydogdu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 16:22:09 by aaydogdu          #+#    #+#             */
-/*   Updated: 2025/08/06 18:15:20 by aaydogdu         ###   ########.fr       */
+/*   Updated: 2025/08/08 15:40:05 by aaydogdu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,11 +70,13 @@ void	cleanup(pthread_t *monitor_thread, t_philos *philos)
 	free(philos);
 }
 
-void	sleepy_philo(time_t time)
+void	sleepy_philo(time_t time, t_philos *philo)
 {
-	time_t	wake_up;
-
-	wake_up = get_time() + time;
+	time_t wake_up = get_time() + time;
 	while (get_time() < wake_up)
+	{
+		if (cont_death(philo))
+			break;
 		usleep(100);
+	}
 }

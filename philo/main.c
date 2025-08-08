@@ -6,7 +6,7 @@
 /*   By: aaydogdu <aaydogdu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 16:21:54 by aaydogdu          #+#    #+#             */
-/*   Updated: 2025/08/06 18:16:48 by aaydogdu         ###   ########.fr       */
+/*   Updated: 2025/08/08 16:58:31 by aaydogdu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ static int	initialize_philo(t_philos *philo, t_info *info)
 		philo[index].info = info;
 		philo[index].last_meal_t = info->start_time;
 		philo[index].meals_eaten = 0;
+		philo[index].had_full = false; // <-- BUNU EKLE!
 		if (pthread_mutex_init(&philo[index].had_full_m, NULL))
 			return (1);
 		if (pthread_mutex_init(&philo[index].last_meal_m, NULL))
@@ -98,9 +99,18 @@ int main(int ac, char **av)
 		free(philos);
 		return (1);
 	}
-	if (initialize_philo(philos, &info)
-		|| pthread_create(&monitor_thread, NULL, &monitor, philos))
+	if (initialize_philo(philos, &info))
 		return (free(info.forks), free(philos), 1);
 	create_philo(philos, &info);
+	if (pthread_create(&monitor_thread, NULL, &monitor, philos))
+		return (free(info.forks), free(philos), 1);
+	int i = 0;
+	while (i < info.num_of_philos)
+	{
+		pthread_join(philos[i].thread,NULL);
+		i++;
+	}
+	
+	//pthread_join(monitor_thread, NULL); // Sadece monitor thread'ini bekle
 	return (cleanup(&monitor_thread, philos), 0);
 }
