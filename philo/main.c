@@ -6,11 +6,26 @@
 /*   By: aaydogdu <aaydogdu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 16:21:54 by aaydogdu          #+#    #+#             */
-/*   Updated: 2025/08/08 16:58:31 by aaydogdu         ###   ########.fr       */
+/*   Updated: 2025/08/09 15:53:33 by aaydogdu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+static int	ft_atoi(const char *str)
+{
+	int	i;
+	int	num;
+
+	i = 0;
+	num = 0;
+	while (str[i])
+	{
+		num = num * 10 + (str[i] - '0');
+		i++;
+	}
+	return (num);
+}
 
 static int	check_args(int argc, char **argv)
 {
@@ -38,7 +53,7 @@ static int	check_args(int argc, char **argv)
 	return (0);
 }
 
-static int initialize_arg(t_info *info, char **argv)
+static int	initialize_arg(t_info *info, char **argv)
 {
 	info->num_of_philos = ft_atoi(argv[1]);
 	info->die_time = ft_atoi(argv[2]);
@@ -46,6 +61,8 @@ static int initialize_arg(t_info *info, char **argv)
 	info->sleep_time = ft_atoi(argv[4]);
 	if (argv[5])
 		info->eat_count = ft_atoi(argv[5]);
+	if (info->eat_count == 0)
+		return (write(2, "Error: eat count can't be zero\n", 31));
 	info->start_time = get_time();
 	info->is_anyphilo_died = false;
 	info->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t)
@@ -59,7 +76,7 @@ static int initialize_arg(t_info *info, char **argv)
 		free(info->forks);
 		return (1);
 	}
-	return (0); //hatasızsa 0 dönecek
+	return (0);
 }
 
 static int	initialize_philo(t_philos *philo, t_info *info)
@@ -73,7 +90,7 @@ static int	initialize_philo(t_philos *philo, t_info *info)
 		philo[index].info = info;
 		philo[index].last_meal_t = info->start_time;
 		philo[index].meals_eaten = 0;
-		philo[index].had_full = false; // <-- BUNU EKLE!
+		philo[index].had_full = false;
 		if (pthread_mutex_init(&philo[index].had_full_m, NULL))
 			return (1);
 		if (pthread_mutex_init(&philo[index].last_meal_m, NULL))
@@ -82,35 +99,31 @@ static int	initialize_philo(t_philos *philo, t_info *info)
 	}
 	return (0);
 }
-int main(int ac, char **av)
+
+int	main(int ac, char **av)
 {
 	t_info		info;
 	t_philos	*philos;
 	pthread_t	monitor_thread;
+	int			i;
 
-	if (check_args(ac, av) || initialize_arg(&info, av)) //hatalı bir durum varsa 1 dönecek
+	if (check_args(ac, av) || initialize_arg(&info, av))
 		return (1);
 	philos = (t_philos *)malloc(sizeof(t_philos) * info.num_of_philos);
 	if (!philos)
 		return (1);
 	if (info.num_of_philos == 1)
-	{
-		one_philo(&info, philos);
-		free(philos);
-		return (1);
-	}
+		return (one_philo(&info, philos), free(philos), 1);
 	if (initialize_philo(philos, &info))
 		return (free(info.forks), free(philos), 1);
 	create_philo(philos, &info);
 	if (pthread_create(&monitor_thread, NULL, &monitor, philos))
 		return (free(info.forks), free(philos), 1);
-	int i = 0;
+	i = 0;
 	while (i < info.num_of_philos)
 	{
-		pthread_join(philos[i].thread,NULL);
+		pthread_join(philos[i].thread, NULL);
 		i++;
 	}
-	
-	//pthread_join(monitor_thread, NULL); // Sadece monitor thread'ini bekle
 	return (cleanup(&monitor_thread, philos), 0);
 }

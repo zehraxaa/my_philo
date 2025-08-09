@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aaydogdu <aaydogdu@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/09 13:34:56 by aaydogdu          #+#    #+#             */
+/*   Updated: 2025/08/09 16:01:58 by aaydogdu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PHILO_H
 # define PHILO_H
 
@@ -14,7 +26,7 @@
 # define SLEEP "is sleeping"
 # define DIE "died"
 
-typedef struct	s_info
+typedef struct s_info
 {
 	int				num_of_philos;
 	int				eat_count;
@@ -28,7 +40,7 @@ typedef struct	s_info
 	pthread_mutex_t	print_mutex;
 }	t_info;
 
-typedef struct		s_philos
+typedef struct s_philos
 {
 	int				id;
 	bool			had_full;
@@ -40,23 +52,19 @@ typedef struct		s_philos
 	t_info			*info;
 }	t_philos;
 
-//utils
-int		ft_atoi(const char *str);
-time_t	get_time();
+time_t	get_time(void);
 int		mutex_creator_fork(t_info *info);
 void	sleepy_philo(time_t time, t_philos *philo);
 void	cleanup(pthread_t *monitor_thread, t_philos *philos);
-//monitor
+void	print_two_forks(t_philos *philo);
 void	*monitor(void *arg);
 void	print_call(t_philos philo, char *str);
 void	print_death(t_philos philo, char *str);
 int		cont_death(t_philos *philo);
 int		can_continue(t_philos *philo);
-//philos
 void	one_philo(t_info *info, t_philos *philo);
 void	philo_routine(t_philos *philo);
 void	*philos_life(void *arg);
 void	create_philo(t_philos *philo, t_info *info);
-
 
 #endif

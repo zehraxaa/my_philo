@@ -6,16 +6,17 @@
 /*   By: aaydogdu <aaydogdu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/06 14:04:31 by aaydogdu          #+#    #+#             */
-/*   Updated: 2025/08/08 15:50:39 by aaydogdu         ###   ########.fr       */
+/*   Updated: 2025/08/09 14:29:26 by aaydogdu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static void *one_philo_life(void *arg)
+static void	*one_philo_life(void *arg)
 {
-	t_philos *philo =(t_philos *)arg;
-	
+	t_philos	*philo;
+
+	philo = (t_philos *)arg;
 	pthread_mutex_lock(&philo->info->forks[0]);
 	print_call(*philo, TAKE_FORK);
 	sleepy_philo(philo->info->die_time, philo);
@@ -39,39 +40,32 @@ void	one_philo(t_info *info, t_philos *philo)
 	free(info->forks);
 }
 
-void philo_routine(t_philos *philo) {
-    pthread_mutex_lock(&philo->info->forks[philo->id]);
-    print_call(*philo, TAKE_FORK);
-    pthread_mutex_lock(&philo->info->forks[(philo->id + 1) % philo->info->num_of_philos]);
-    print_call(*philo, TAKE_FORK);
-
-    // 1. YEMEYE BAŞLARKEN ZAMAN GÜNCELLE
-    pthread_mutex_lock(&philo->last_meal_m);
-    philo->last_meal_t = get_time();
-    pthread_mutex_unlock(&philo->last_meal_m);
-
-    // 2. MESAJ BAS
-    print_call(*philo, EAT);
-
-    // 3. YEMEK SÜRESİ KADAR BEKLE
-    sleepy_philo(philo->info->eat_time, philo);
-
-    pthread_mutex_unlock(&philo->info->forks[(philo->id + 1) % philo->info->num_of_philos]);
-    pthread_mutex_unlock(&philo->info->forks[philo->id]);
-
-    print_call(*philo, SLEEP);
-    sleepy_philo(philo->info->sleep_time, philo);
-    print_call(*philo, THINK);
+void	philo_routine(t_philos *philo)
+{
+	pthread_mutex_lock(&philo->info->forks[philo->id]);
+	pthread_mutex_lock(&philo->info->forks[(philo->id + 1)
+		% philo->info->num_of_philos]);
+	print_two_forks(philo);
+	pthread_mutex_lock(&philo->last_meal_m);
+	philo->last_meal_t = get_time();
+	pthread_mutex_unlock(&philo->last_meal_m);
+	print_call(*philo, EAT);
+	sleepy_philo(philo->info->eat_time, philo);
+	pthread_mutex_unlock(&philo->info->forks[(philo->id + 1)
+		% philo->info->num_of_philos]);
+	pthread_mutex_unlock(&philo->info->forks[philo->id]);
+	print_call(*philo, SLEEP);
+	sleepy_philo(philo->info->sleep_time, philo);
+	print_call(*philo, THINK);
 }
 
 void	*philos_life(void *arg)
 {
 	t_philos	*philo;
-	
+
 	philo = (t_philos *)arg;
 	if (philo->id % 2 == 0)
 		sleepy_philo(philo->info->eat_time / 2, philo);
-	
 	while (can_continue(philo))
 	{
 		philo_routine(philo);
@@ -85,6 +79,7 @@ void	*philos_life(void *arg)
 	pthread_mutex_unlock(&philo->had_full_m);
 	return (NULL);
 }
+
 void	create_philo(t_philos *philo, t_info *info)
 {
 	int	i;

@@ -1,8 +1,7 @@
 NAME = philo
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror #-fsanitize=thread
-##LDFLAGS = -fsanitize=thread
+CFLAGS = -Wall -Wextra -Werror
 
 SRC = main.c utils.c monitor.c philos.c
 
@@ -10,17 +9,21 @@ OBJ = $(SRC:.c=.o)
 
 all: $(NAME)
 
-$(NAME): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) 
-
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
+
+$(NAME): $(OBJ)
+	@$(CC) $(CFLAGS) $(OBJ) -o $(NAME) 
+	@echo "✅ $(NAME) compiled"
 
 clean:
-	rm -f $(OBJ)
+	@rm -f $(OBJ)
+	@echo "🧹 bye bye object files"
 
-fclean: clean
-	rm -f $(NAME)
+fclean:
+	@rm -rf $(OBJ)
+	@rm -f $(NAME)
+	@echo "🧼 fully cleaned up"
 
 re: fclean all
 
