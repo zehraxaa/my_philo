@@ -101,6 +101,7 @@ static int	initialize_philo(t_philos *philo, t_info *info)
 	}
 	return (0);
 }
+
 static int	philo_monitor(t_philos *philos, t_info *info)
 {
 	pthread_t	monitor_thread;
@@ -146,4 +147,3 @@ int	main(int ac, char **av)
 		return (1);
 	return (0);
 }
-

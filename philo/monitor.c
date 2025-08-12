@@ -22,7 +22,7 @@ int	cont_death(t_philos *philo)
 		pthread_mutex_unlock(&philo->last_meal_m);
 		pthread_mutex_unlock(&philo->had_full_m);
 		return (1);
-	}		
+	}
 	pthread_mutex_unlock(&philo->had_full_m);
 	pthread_mutex_unlock(&philo->last_meal_m);
 	return (0);
