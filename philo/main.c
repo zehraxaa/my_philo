@@ -61,6 +61,8 @@ static int	initialize_arg(t_info *info, char **argv)
 	info->sleep_time = ft_atoi(argv[4]);
 	if (argv[5])
 		info->eat_count = ft_atoi(argv[5]);
+	else
+		info->eat_count = -1;
 	if (info->eat_count == 0)
 		return (write(2, "Error: eat count can't be zero\n", 31));
 	info->start_time = get_time();
@@ -99,13 +101,29 @@ static int	initialize_philo(t_philos *philo, t_info *info)
 	}
 	return (0);
 }
+static int	philo_monitor(t_philos *philos, t_info *info)
+{
+	pthread_t	monitor_thread;
+	int			i;
+
+	create_philo(philos, info);
+	if (pthread_create(&monitor_thread, NULL, &monitor, philos))
+	{
+		free(info->forks);
+		free(philos);
+		return (1);
+	}
+	i = -1;
+	while (++i < info->num_of_philos)
+		pthread_join(philos[i].thread, NULL);
+	cleanup(&monitor_thread, philos);
+	return (0);
+}
 
 int	main(int ac, char **av)
 {
 	t_info		info;
 	t_philos	*philos;
-	pthread_t	monitor_thread;
-	int			i;
 
 	if (check_args(ac, av) || initialize_arg(&info, av))
 		return (1);
@@ -113,17 +131,19 @@ int	main(int ac, char **av)
 	if (!philos)
 		return (1);
 	if (info.num_of_philos == 1)
-		return (one_philo(&info, philos), free(philos), 1);
-	if (initialize_philo(philos, &info))
-		return (free(info.forks), free(philos), 1);
-	create_philo(philos, &info);
-	if (pthread_create(&monitor_thread, NULL, &monitor, philos))
-		return (free(info.forks), free(philos), 1);
-	i = 0;
-	while (i < info.num_of_philos)
 	{
-		pthread_join(philos[i].thread, NULL);
-		i++;
+		one_philo(&info, philos);
+		free(philos);
+		return (1);
 	}
-	return (cleanup(&monitor_thread, philos), 0);
+	if (initialize_philo(philos, &info))
+	{
+		free(info.forks);
+		free(philos);
+		return (1);
+	}
+	if (philo_monitor(philos, &info))
+		return (1);
+	return (0);
 }
+

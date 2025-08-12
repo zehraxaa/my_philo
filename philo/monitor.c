@@ -18,8 +18,11 @@ int	cont_death(t_philos *philo)
 	pthread_mutex_lock(&philo->had_full_m);
 	if (philo->had_full == false && get_time() - philo->last_meal_t
 		>= philo->info->die_time)
-		return (pthread_mutex_unlock(&philo->last_meal_m),
-			pthread_mutex_unlock(&philo->had_full_m), 1);
+	{
+		pthread_mutex_unlock(&philo->last_meal_m);
+		pthread_mutex_unlock(&philo->had_full_m);
+		return (1);
+	}		
 	pthread_mutex_unlock(&philo->had_full_m);
 	pthread_mutex_unlock(&philo->last_meal_m);
 	return (0);
